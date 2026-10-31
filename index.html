@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JANSHAKTI AUDIO MEETING</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ font-family:Arial,sans-serif;
+ background:#071d33;
+ color:white;
+ min-height:100vh;
+}
+header{
+ background:#061426;
+ padding:20px 15px;
+ text-align:center;
+ border-bottom:3px solid #e7bd59;
+}
+.logo{
+ color:#e7bd59;
+ font-size:28px;
+ font-weight:bold;
+ letter-spacing:2px;
+}
+header p{color:#ddd;margin-top:6px}
+.container{
+ max-width:850px;
+ margin:25px auto;
+ padding:15px;
+}
+.card{
+ background:#102d48;
+ border:1px solid #34516b;
+ border-radius:16px;
+ padding:22px;
+ margin-bottom:18px;
+ box-shadow:0 5px 20px #0004;
+}
+h2{
+ color:#e7bd59;
+ margin-bottom:18px;
+ text-align:center;
+}
+input{
+ width:100%;
+ padding:14px;
+ margin:8px 0;
+ border-radius:8px;
+ border:1px solid #789;
+ background:#071d33;
+ color:white;
+ font-size:16px;
+}
+button{
+ border:0;
+ border-radius:9px;
+ padding:14px 18px;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+ margin-top:10px;
+}
+.gold{background:#e7bd59;color:#071d33}
+.green{background:#168b58;color:white}
+.red{background:#c93636;color:white}
+.gray{background:#52677b;color:white}
+button:disabled{opacity:.5;cursor:not-allowed}
+.full{width:100%}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+ text-align:center;
+}
+.stat{
+ background:#071d33;
+ padding:17px 5px;
+ border-radius:10px;
+}
+.stat strong{
+ display:block;
+ font-size:25px;
+ color:#e7bd59;
+ margin-bottom:5px;
+}
+.stat span{font-size:13px;color:#ddd}
+.timer{
+ font-size:45px;
+ font-weight:bold;
+ text-align:center;
+ color:#e7bd59;
+ margin:18px 0;
+}
+.status{
+ text-align:center;
+ padding:12px;
+ border-radius:8px;
+ background:#071d33;
+ margin:12px 0;
+ color:#ddd;
+}
+.note{
+ color:#b9c9d8;
+ font-size:13px;
+ line-height:1.7;
+ margin-top:15px;
+}
+.hidden{display:none}
+footer{
+ text-align:center;
+ padding:25px;
+ color:#9aabba;
+ font-size:13px;
+}
+@media(max-width:500px){
+ .stats{grid-template-columns:1fr 1fr}
+ .logo{font-size:23px}
+ .timer{font-size:38px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">JANSHAKTI</div>
+ <h3>AUDIO MEETING</h3>
+ <p>जनशक्ति परिवार का अपना ऑडियो मीटिंग प्लेटफॉर्म</p>
+</header>
+
+<div class="container">
+
+ <!-- ADMIN LOGIN -->
+ <div class="card" id="loginBox">
+  <h2>ADMIN LOGIN</h2>
+  <p style="text-align:center;color:#ddd">
+   केवल अधिकृत Admin ही मीटिंग शुरू कर सकता है।
+  </p>
+  <input id="adminName" placeholder="Admin का नाम">
+  <input id="adminPassword" type="password"
+   placeholder="Admin Password">
+  <button class="gold full" onclick="adminLogin()">
+   ADMIN LOGIN
+  </button>
+  <p class="note">
+   नोट: यह केवल डिजाइन का डेमो लॉगिन है।
+   वास्तविक सुरक्षा के लिए सर्वर पर लॉगिन सत्यापन जरूरी है।
+  </p>
+ </div>
+
+ <!-- ADMIN PANEL -->
+ <div class="card hidden" id="adminPanel">
+  <h2>ADMIN CONTROL PANEL</h2>
+
+  <div class="stats">
+   <div class="stat">
+    <strong>150</strong>
+    <span>अधिकतम सदस्य</span>
+   </div>
+   <div class="stat">
+    <strong>45</strong>
+    <span>मिनट</span>
+   </div>
+   <div class="stat">
+    <strong>1</strong>
+    <span>Admin Speaker</span>
+   </div>
+  </div>
+
+  <div class="status" id="status">
+   मीटिंग शुरू होने की प्रतीक्षा में
+  </div>
+
+  <button class="green full" id="startBtn"
+   onclick="startMeeting()">
+   ▶ START MEETING
+  </button>
+
+  <button class="red full" id="stopBtn"
+   onclick="stopMeeting()" disabled>
+   ■ END MEETING
+  </button>
+
+  <button class="gray full" onclick="adminLogout()">
+   LOGOUT
+  </button>
+ </div>
+
+ <!-- MEETING ROOM -->
+ <div class="card hidden" id="meetingBox">
+  <h2>JANSHAKTI LIVE MEETING</h2>
+
+  <div class="status" id="meetingStatus">
+   मीटिंग चालू है
+  </div>
+
+  <div class="timer" id="timer">45:00</div>
+
+  <div class="stats">
+   <div class="stat">
+    <strong id="memberCount">0</strong>
+    <span>जुड़े हुए सदस्य</span>
+   </div>
+   <div class="stat">
+    <strong>150</strong>
+    <span>क्षमता</span>
+   </div>
+   <div class="stat">
+    <strong>45:00</strong>
+    <span>कुल समय</span>
+   </div>
+  </div>
+
+  <div class="status">
+   🎙 केवल Admin को बोलने की अनुमति
+  </div>
+
+  <div class="status">
+   🎧 अन्य सदस्य केवल सुनेंगे
+  </div>
+
+  <button class="gold full" id="micBtn"
+   onclick="toggleMic()" disabled>
+   🎙 ADMIN MIC ON
+  </button>
+
+  <button class="red full" onclick="stopMeeting()">
+   मीटिंग समाप्त करें
+  </button>
+
+  <p class="note">
+   मीटिंग का समय 45 मिनट पूरा होने पर
+   अपने आप समाप्त हो जाएगा।
+  </p>
+ </div>
+
+ <!-- MEMBER PANEL -->
+ <div class="card" id="memberBox">
+  <h2>JOIN AUDIO MEETING</h2>
+  <p style="text-align:center;color:#ddd">
+   जनशक्ति ऑडियो मीटिंग में शामिल हों।
+  </p>
+
+  <input id="memberName" placeholder="अपना नाम लिखें">
+  <input id="meetingId" placeholder="Meeting ID">
+
+  <button class="gold full" onclick="joinMeeting()">
+   🎧 JOIN MEETING
+  </button>
+
+  <p class="note">
+   सदस्य मीटिंग में केवल सुन सकेंगे।
+   उनका माइक्रोफोन बंद रहेगा।
+  </p>
+ </div>
+
+</div>
+
+<footer>
+ © 2026 JANSHAKTI AUDIO MEETING
+<br>
+जनशक्ति परिवार के लिए बनाया गया प्लेटफॉर्म
+</footer>
+
+<script>
+let timeLeft = 45 * 60;
+let timerInterval = null;
+let meetingActive = false;
+let isAdmin = false;
+let micEnabled = false;
+
+// DEMO LOGIN
+// वास्तविक लॉगिन सर्वर से सत्यापित होना चाहिए।
+function adminLogin(){
+ const name = document.getElementById("adminName").value.trim();
+ const pass = document.getElementById("adminPassword").value;
+
+ if(!name || !pass){
+  alert("कृपया नाम और पासवर्ड भरें।");
+  return;
+ }
+
+ // यह असली authentication नहीं है।
+ // अभी केवल इंटरफेस का परीक्षण है।
+ isAdmin = true;
+
+ document.getElementById("loginBox").classList.add("hidden");
+ document.getElementById("adminPanel").classList.remove("hidden");
+
+ alert("डेमो Admin Panel खुल गया।");
+}
+
+function adminLogout(){
+ if(meetingActive){
+  alert("पहले मीटिंग समाप्त करें।");
+  return;
+ }
+
+ isAdmin = false;
+ document.getElementById("adminPanel").classList.add("hidden");
+ document.getElementById("loginBox").classList.remove("hidden");
+}
+
+// START MEETING
+function startMeeting(){
+ if(!isAdmin){
+  alert("Admin Login आवश्यक है।");
+  return;
+ }
+
+ if(meetingActive) return;
+
+ meetingActive = true;
+ timeLeft = 45 * 60;
+
+ document.getElementById("meetingBox").classList.remove("hidden");
+ document.getElementById("startBtn").disabled = true;
+ document.getElementById("stopBtn").disabled = false;
+ document.getElementById("status").innerText =
+  "मीटिंग चालू है";
+
+ document.getElementById("meetingStatus").innerText =
+  "🟢 LIVE MEETING";
+
+ updateTimer();
+
+ timerInterval = setInterval(function(){
+  if(!meetingActive) return;
+
+  timeLeft--;
+  updateTimer();
+
+  if(timeLeft <= 0){
+   stopMeeting();
+   alert("45 मिनट पूरे हो गए। मीटिंग अपने आप समाप्त हो गई।");
+  }
+ },1000);
+}
+
+// TIMER
+function updateTimer(){
+ let min = Math.floor(timeLeft/60);
+ let sec = timeLeft%60;
+
+ document.getElementById("timer").innerText =
+  String(min).padStart(2,"0")+":"+
+  String(sec).padStart(2,"0");
+}
+
+// STOP MEETING
+function stopMeeting(){
+ meetingActive = false;
+ micEnabled = false;
+
+ if(timerInterval){
+  clearInterval(timerInterval);
+  timerInterval = null;
+ }
+
+ document.getElementById("meetingBox").classList.add("hidden");
+ document.getElementById("startBtn").disabled = false;
+ document.getElementById("stopBtn").disabled = true;
+
+ document.getElementById("status").innerText =
+  "मीटिंग समाप्त हो गई";
+
+ document.getElementById("micBtn").innerText =
+  "🎙 ADMIN MIC ON";
+}
+
+// ADMIN MIC DEMO
+function toggleMic(){
+ if(!isAdmin || !meetingActive) return;
+
+ micEnabled = !micEnabled;
+
+ document.getElementById("micBtn").innerText =
+  micEnabled ? "🔴 ADMIN MIC OFF" : "🎙 ADMIN MIC ON";
+}
+
+// MEMBER JOIN DEMO
+function joinMeeting(){
+ const name = document.getElementById("memberName").value.trim();
+ const id = document.getElementById("meetingId").value.trim();
+
+ if(!name || !id){
+  alert("कृपया नाम और Meeting ID भरें।");
+  return;
+ }
+
+ if(!meetingActive){
+  alert("अभी कोई लाइव मीटिंग चालू नहीं है।");
+  return;
+ }
+
+ alert("यह डेमो इंटरफेस है। वास्तविक ऑडियो के लिए LiveKit कनेक्शन जरूरी है।");
+}
+</script>
+
+</body>
+</html>
